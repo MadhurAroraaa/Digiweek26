@@ -47,6 +47,13 @@ describe('public sections & navigation', () => {
     expect(onOpenMenu).toHaveBeenCalledOnce();
   });
 
+  it('renders official UCC & DA and J.C. Bose University logos in SiteHeader', () => {
+    render(<SiteHeader onOpenMenu={vi.fn()} />);
+    expect(screen.getByAltText(/UCC & DA Logo/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/J.C. Bose University Logo/i)).toBeInTheDocument();
+    expect(screen.getByText('UCC & DA')).toBeInTheDocument();
+  });
+
   it('navigates to sections and closes menu via button and Escape key', () => {
     const onClose = vi.fn();
     const onNavigate = vi.fn();

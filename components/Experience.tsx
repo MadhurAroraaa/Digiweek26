@@ -248,8 +248,33 @@ export default function Experience() {
       <div ref={heroCurtainRef} className="hero-curtain" />
 
       <div ref={heroUiRef} className="hero-ui">
-        <div className="hero-kicker">UCC &amp; DA · J.C. BOSE UNIVERSITY · FARIDABAD</div>
+        <div className="hero-brand-lockup">
+          <div className="hero-brand-logos">
+            <img
+              src="/assets/brand/ucc-logo.png"
+              alt="UCC & DA Logo"
+              className="hero-brand-logo hero-logo-ucc"
+              width={38}
+              height={38}
+            />
+            <img
+              src="/assets/brand/university-logo.png"
+              alt="J.C. Bose University Logo"
+              className="hero-brand-logo hero-logo-univ"
+              width={38}
+              height={38}
+            />
+          </div>
+          <div className="hero-kicker">A FLAGSHIP INITIATIVE BY UCC &amp; DA</div>
+        </div>
+
         <h1>DIGIWEEK <span>&apos;26</span></h1>
+
+        <div className="hero-institution-line">
+          <span>J.C. BOSE UNIVERSITY OF SCIENCE &amp; TECHNOLOGY</span>
+          <em>YMCA · FARIDABAD</em>
+        </div>
+
         <p>A different world.<br />Built by students.</p>
         <div className="hero-meta"><span>COMING SOON</span><span>SCROLL TO ENTER</span></div>
       </div>

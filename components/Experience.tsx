@@ -248,24 +248,28 @@ export default function Experience() {
       <div ref={heroCurtainRef} className="hero-curtain" />
 
       <div ref={heroUiRef} className="hero-ui">
-        <div className="hero-brand-lockup">
+        <div className="hero-brand-header">
           <div className="hero-brand-logos">
             <img
               src="/assets/brand/ucc-logo.png"
-              alt="UCC & DA Logo"
+              alt="UCC & DA Official Logo"
               className="hero-brand-logo hero-logo-ucc"
-              width={38}
-              height={38}
+              width={54}
+              height={54}
             />
             <img
               src="/assets/brand/university-logo.png"
-              alt="J.C. Bose University Logo"
+              alt="J.C. Bose University Official Logo"
               className="hero-brand-logo hero-logo-univ"
-              width={38}
-              height={38}
+              width={50}
+              height={50}
             />
           </div>
-          <div className="hero-kicker">A FLAGSHIP INITIATIVE BY UCC &amp; DA</div>
+
+          <div className="hero-org-block">
+            <div className="hero-org-name">UCC &amp; DA</div>
+            <div className="hero-org-kicker">A FLAGSHIP INITIATIVE</div>
+          </div>
         </div>
 
         <h1>DIGIWEEK <span>&apos;26</span></h1>

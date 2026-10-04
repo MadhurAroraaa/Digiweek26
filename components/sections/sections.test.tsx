@@ -47,11 +47,11 @@ describe('public sections & navigation', () => {
     expect(onOpenMenu).toHaveBeenCalledOnce();
   });
 
-  it('renders official UCC & DA and J.C. Bose University logos in SiteHeader', () => {
+  it('keeps SiteHeader minimal with wordmark and menu trigger', () => {
     render(<SiteHeader onOpenMenu={vi.fn()} />);
-    expect(screen.getByAltText(/UCC & DA Logo/i)).toBeInTheDocument();
-    expect(screen.getByAltText(/J.C. Bose University Logo/i)).toBeInTheDocument();
-    expect(screen.getByText('UCC & DA')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /digiweek home/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /open menu/i })).toBeInTheDocument();
+    expect(screen.queryByAltText(/UCC & DA Logo/i)).not.toBeInTheDocument();
   });
 
   it('navigates to sections and closes menu via button and Escape key', () => {

@@ -47,10 +47,11 @@ test('reduced motion loads without hiding public content', async ({ page }) => {
   await expect(page.getByText('SPONSORS')).toBeVisible();
 });
 
-test('header and hero communicate UCC & DA and J.C. Bose University institutional hierarchy', async ({ page }) => {
+test('hero communicates UCC & DA and J.C. Bose University institutional hierarchy with minimal header', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByText('A FLAGSHIP INITIATIVE BY UCC & DA')).toBeVisible();
+  await expect(page.locator('.hero-org-name')).toHaveText('UCC & DA');
+  await expect(page.getByText('A FLAGSHIP INITIATIVE · PRESENTED BY')).toBeVisible();
   await expect(page.getByText('J.C. BOSE UNIVERSITY OF SCIENCE & TECHNOLOGY', { exact: true })).toBeVisible();
   await expect(page.locator('.hero-brand-logos img')).toHaveCount(2);
-  await expect(page.locator('.header-brand-logos img')).toHaveCount(2);
+  await expect(page.locator('.header-brand-logos img')).toHaveCount(0);
 });

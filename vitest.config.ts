@@ -1,3 +1,5 @@
+process.env.VITEST_SKIP_INSTALL_CHECKS = '1';
+
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
 

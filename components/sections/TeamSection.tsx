@@ -1,20 +1,35 @@
 import type { TeamGroup } from '@/data/content';
 
-type TeamSectionProps = {
-  team: TeamGroup[];
-};
+export interface TeamSectionProps {
+  team: readonly TeamGroup[];
+}
 
+/**
+ * TeamSection renders the student leadership and coordination committees.
+ */
 export function TeamSection({ team }: TeamSectionProps) {
   return (
-    <section id="team" className="site-section team-section">
+    <section id="team" className="site-section team-section" aria-label="DigiWeek organizing team">
       <div className="section-index">03</div>
       <div className="section-label">THE PEOPLE</div>
+
       <div className="team-intro">
-        <h2>Built by<br /><span>students.</span></h2>
+        <h2>
+          Built by
+          <br />
+          <span>students.</span>
+        </h2>
       </div>
+
       <figure className="team-photo">
-        <img src="/assets/real/techttonic-group.jpg" alt="Students attending a previous technology event" />
+        <img
+          src="/assets/real/techttonic-group.jpg"
+          alt="Organizing team at a previous technology event"
+          loading="lazy"
+          decoding="async"
+        />
       </figure>
+
       <div className="team-grid">
         {team.map((group) => (
           <div className="team-column" key={group.group}>

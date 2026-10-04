@@ -1,49 +1,72 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
+/**
+ * Cinematic custom cursor for fine-pointer (mouse) devices.
+ *
+ * Uses direct GPU translate3d styling on the cursor element to eliminate
+ * the constant document-wide style recalculations that occur when writing
+ * CSS variables to :root on every pointer event.
+ */
 export function CustomCursor() {
-  useEffect(() => {
-    const root = document.documentElement;
-    const supportsFinePointer = window.matchMedia('(pointer: fine)').matches;
+  const orbRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    const supportsFinePointer = window.matchMedia('(pointer: fine)').matches;
     if (!supportsFinePointer) {
       return;
     }
 
-    const updatePosition = (event: PointerEvent) => {
-      root.style.setProperty('--cursor-x', `${event.clientX}px`);
-      root.style.setProperty('--cursor-y', `${event.clientY}px`);
+    const orb = orbRef.current;
+    if (!orb) return;
+
+    let isVisible = false;
+
+    const handlePointerMove = (event: PointerEvent) => {
+      orb.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate(-50%, -50%)`;
+      if (!isVisible) {
+        isVisible = true;
+        orb.style.opacity = '1';
+      }
     };
 
-    const markInteractiveTarget = (event: PointerEvent) => {
-      const target = event.target instanceof HTMLElement ? event.target.closest('a,button') : null;
+    const handlePointerLeave = () => {
+      isVisible = false;
+      orb.style.opacity = '0';
+    };
+
+    const handlePointerOver = (event: PointerEvent) => {
+      const target = event.target instanceof HTMLElement ? event.target.closest('a, button') : null;
       if (target) {
-        root.classList.add('cursor-hover');
+        document.documentElement.classList.add('cursor-hover');
       }
     };
 
-    const clearInteractiveTarget = (event: PointerEvent) => {
-      const nextTarget = event.relatedTarget instanceof HTMLElement ? event.relatedTarget.closest('a,button') : null;
+    const handlePointerOut = (event: PointerEvent) => {
+      const nextTarget =
+        event.relatedTarget instanceof HTMLElement ? event.relatedTarget.closest('a, button') : null;
       if (!nextTarget) {
-        root.classList.remove('cursor-hover');
+        document.documentElement.classList.remove('cursor-hover');
       }
     };
 
-    window.addEventListener('pointermove', updatePosition, { passive: true });
-    window.addEventListener('pointerover', markInteractiveTarget, { passive: true });
-    window.addEventListener('pointerout', clearInteractiveTarget, { passive: true });
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    document.addEventListener('mouseleave', handlePointerLeave);
+    window.addEventListener('pointerover', handlePointerOver, { passive: true });
+    window.addEventListener('pointerout', handlePointerOut, { passive: true });
 
     return () => {
-      window.removeEventListener('pointermove', updatePosition);
-      window.removeEventListener('pointerover', markInteractiveTarget);
-      window.removeEventListener('pointerout', clearInteractiveTarget);
-      root.classList.remove('cursor-hover');
+      window.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('mouseleave', handlePointerLeave);
+      window.removeEventListener('pointerover', handlePointerOver);
+      window.removeEventListener('pointerout', handlePointerOut);
+      document.documentElement.classList.remove('cursor-hover');
     };
   }, []);
 
   return (
-    <div className="cursor-orb" aria-hidden="true">
+    <div ref={orbRef} className="cursor-orb" aria-hidden="true">
       <span />
     </div>
   );

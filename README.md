@@ -1,96 +1,153 @@
-# DigiWeek '26
+# DigiWeek '26 — Official Website
 
-Immersive Coming Soon website for DigiWeek '26 by UCC & DA at J.C. Bose University of Science & Technology, YMCA, Faridabad.
+Cinematic, immersive web experience for **DigiWeek '26** organized by UCC & DA at J.C. Bose University of Science & Technology, YMCA, Faridabad.
 
-The current public phase intentionally keeps events and sponsors hidden. Approved public content lives in code as empty `events` and `sponsors` arrays, so the site displays Coming Soon states until real data is added.
+---
 
-## Tech Stack
+## 1. Project Phase & Public Content Rules
+- **Current Status**: Public teaser & "Coming Soon" phase.
+- **Approved Public Content**:
+  - `events` array in `data/content.ts` is strictly `[]` (renders designated "Events Coming Soon" lockup).
+  - `sponsors` array in `data/content.ts` is strictly `[]` (renders architectural "Coming Soon." status).
+  - Do **not** invent or publish tentative event lineups, dates, or sponsor assets until officially approved.
 
-- Next.js App Router
-- React
-- TypeScript
-- Three.js with post-processing
-- Vitest + Testing Library
-- Playwright
-- ESLint
+---
 
-## Local Setup
+## 2. Tech Stack
+- **Framework**: Next.js (App Router, Turbopack, React 19)
+- **Language**: TypeScript (strict mode)
+- **3D / Graphics**: Three.js (WebGL, procedural world generation, custom GLSL shaders, EffectComposer)
+- **Unit & Integration Testing**: Vitest + React Testing Library + JSDOM
+- **End-to-End Testing**: Playwright
+- **Linting & Code Quality**: ESLint
 
+---
+
+## 3. Getting Started
+
+### Local Development
 ```bash
 npm install
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000).
 
-Open `http://localhost:3000`.
-
-## Production Build
-
+### Verification & Production Build
 ```bash
-npm run typecheck
-npm run lint
-npm test
-npm run build
+npm run typecheck   # Strict TypeScript check (0 errors)
+npm run lint        # ESLint check (0 warnings)
+npm test            # 27 unit & integration tests in Vitest
+npm run build       # Next.js optimized static production build
 ```
 
-Run browser verification with:
+---
 
-```bash
-npm run e2e
+## 4. Architecture & Directory Structure
+
+```
+├── app/
+│   ├── layout.tsx             # Root layout & page metadata
+│   ├── page.tsx               # Entry point wiring header, experience, sections, & menu
+│   └── globals.css            # Responsive layout, typography, and palette styling
+├── components/
+│   ├── Experience.tsx         # WebGL canvas lifecycle & direct hero DOM orchestration
+│   ├── navigation/
+│   │   ├── SiteHeader.tsx     # Fixed top wordmark, institution badge, and menu trigger
+│   │   └── MenuLayer.tsx      # Fullscreen dialog menu with keyboard Escape handling
+│   ├── sections/
+│   │   ├── AboutSection.tsx   # Legacy archive, campus media, and video reel
+│   │   ├── EventsSection.tsx  # Dynamic events or "Coming Soon" panel
+│   │   ├── TeamSection.tsx    # Centralized student organizing committee
+│   │   ├── SponsorsSection.tsx# Dynamic sponsor grid or "Coming Soon" panel
+│   │   └── ContactSection.tsx # Social channels, phone, and institutional partner marks
+│   └── ui/
+│       └── CustomCursor.tsx   # Fine-pointer GPU-accelerated cursor
+├── data/
+│   └── content.ts             # Single source of truth for public navigation, team, events, and socials
+├── lib/
+│   ├── animation/
+│   │   └── math.ts            # clamp01, smoothstep, exponential damp, and scroll normalization
+│   ├── performance/
+│   │   └── tier.ts            # Deterministic High / Medium / Low quality tier selection
+│   └── three/
+│       ├── camera/
+│       │   └── cameraChoreography.ts # 3D Catmull-Rom camera & lookAt splines
+│       ├── scene/
+│       │   ├── createCinematicWorld.ts # Procedural geometry, lights, terrain & models
+│       │   └── animateWorld.ts         # Zero-allocation per-frame transform/shader updates
+│       ├── shaders/
+│       │   └── FilmShader.ts           # 35mm grain, chromatic aberration, vignette shader
+│       └── dispose.ts         # Safe recursive WebGL and texture cleanup
+├── public/assets/
+│   ├── brand/                 # UCC & university partner logos
+│   ├── real/                  # Historical and campus archive photographs
+│   └── video/                 # Event highlight loop (MP4)
+└── test/
+    └── e2e/home.spec.ts       # Playwright end-to-end scenarios
 ```
 
-## Project Structure
+---
 
-- `app/page.tsx` wires the homepage sections together.
-- `app/layout.tsx` defines app metadata and global shell.
-- `app/globals.css` contains the current visual system and responsive layout.
-- `components/Experience.tsx` mounts and owns the Three.js hero scene.
-- `components/navigation/` contains the fixed header and full-screen menu.
-- `components/sections/` contains About, Events, Team, Sponsors, and Contact.
-- `components/ui/CustomCursor.tsx` owns desktop cursor behavior.
-- `data/content.ts` contains public navigation, team, event, sponsor, and social data.
-- `lib/animation/` contains testable scroll/easing/damping helpers.
-- `lib/performance/` selects deterministic High, Medium, and Low quality tiers.
-- `lib/three/` contains WebGL disposal helpers.
-- `public/assets/` contains approved public images, logos, and video.
+## 5. WebGL Lifecycle & Performance System
 
-## Content Boundaries
+### High-Level Scene Architecture
+1. **Procedural World (`lib/three/scene/createCinematicWorld.ts`)**:
+   - Celestial atmosphere using GLSL procedural noise sky shader.
+   - Textural relief terrain generated mathematically with calculated vertex normals catching green rim light.
+   - Architectural horizon silhouettes, portal halo with cylindrical energy beam, floating rock dodecahedrons, and the focal transformation device.
+2. **Deterministic Camera Choreography (`lib/three/camera/cameraChoreography.ts`)**:
+   - Single source of truth: `scrollProgress` (0 -> 1) maps deterministically to 3D Catmull-Rom splines for both camera position and target orientation.
+   - Fine-pointer mouse movement provides subtle parallax deflection in the hero view, smoothly diminishing as the user scrolls deeper into the world.
+3. **Zero Hot-Path Allocations (`lib/three/scene/animateWorld.ts`)**:
+   - No `Vector3`, `Matrix4`, arrays, or closures are instantiated inside `requestAnimationFrame`.
+   - Mesh rotations and transforms update via indexed for-loops.
+4. **Direct Hero DOM Updates**:
+   - Opacity and title transform are applied directly to component element refs rather than writing CSS custom properties to `:root`, preventing document-wide CSS recalculation.
+5. **Deterministic Performance Tiers (`lib/performance/tier.ts`)**:
+   - `high`: Full particle budgets (440 stars, 520 energy particles, 132x76 relief grid, max DPR 1.5).
+   - `medium`: Balanced budgets for high-DPR screens or lower concurrency devices.
+   - `low`: Lightweight budgets (150 stars, 180 energy particles, 78x46 relief grid, max DPR 1.0) with coarse-pointer optimizations for mobile devices.
+6. **Leak-Proof Resource Disposal (`lib/three/dispose.ts`)**:
+   - Cancels active `requestAnimationFrame`.
+   - Removes scroll, pointer, resize, and visibility listeners.
+   - Traverses scene graph disposing all geometries, materials, uniform textures, EffectComposer passes, and forces WebGL context loss.
 
-Team data is centralized in `data/content.ts`.
+---
 
-Future event records should be added to the `events` array only after approval. Until then it must stay empty so Events remains Coming Soon.
+## 6. How to Add Future Content
 
-Future sponsor records should be added to the `sponsors` array only after approval. Until then it must stay empty so Sponsors remains Coming Soon.
+### Adding Events
+When the event lineup is officially approved:
+1. Open `data/content.ts`.
+2. Populate the `events` array:
+   ```ts
+   export const events: readonly EventRecord[] = [
+     {
+       title: 'Keynote & Inauguration',
+       description: 'Opening address and launch of DigiWeek 2026.',
+       date: 'October 2026',
+       venue: 'Main Auditorium',
+     },
+   ];
+   ```
+3. `EventsSection.tsx` automatically switches from the "Coming Soon" panel to the populated events list.
 
-Social links and phone contact live in `socials`.
+### Adding Sponsors
+When sponsorship partnerships are confirmed:
+1. Place sponsor logos into `public/assets/brand/`.
+2. Open `data/content.ts`.
+3. Add entries to the `sponsors` array:
+   ```ts
+   export const sponsors: readonly SponsorRecord[] = [
+     {
+       name: 'Partner Name',
+       logoSrc: '/assets/brand/partner-logo.png',
+       url: 'https://partner.com',
+     },
+   ];
+   ```
+4. `SponsorsSection.tsx` automatically renders the active partner grid.
 
-## Three.js Scene
-
-`components/Experience.tsx` creates the renderer, scene, camera, post-processing composer, geometry, lights, scroll state, and pointer state on mount. It does not push per-frame values through React state.
-
-Scroll progress is normalized with `normalizeScrollProgress` from `lib/animation/math.ts`. That progress drives the camera curve, target curve, reveal timing, bloom, film pass, portal, device, ribbons, and hero UI CSS variables.
-
-Pointer interaction is enabled only for fine-pointer devices. It is damped inside the render loop and cleaned up on unmount.
-
-The scene uses deterministic performance tiers from `lib/performance/tier.ts`:
-
-- `high`: desktop-class devices, higher particle and star budgets
-- `medium`: tablets, high-DPR screens, or lower CPU concurrency
-- `low`: mobile or coarse-pointer devices
-
-On unmount, the scene cancels animation, removes listeners, disposes geometries, materials, textures, composer resources, renderer resources, and removes the canvas.
-
-## Assets
-
-Visible site assets are stored under:
-
-- `public/assets/brand/`
-- `public/assets/real/`
-- `public/assets/video/`
-
-Replace an asset by keeping the same public path when preserving the current layout. Add new assets only when they are approved for public release.
-
-## Tests
-
-- Unit tests cover animation math and performance tier selection.
-- Component tests cover Team, Contact, Events Coming Soon, and Sponsors Coming Soon rendering.
-- E2E tests cover homepage loading, console errors, canvas initialization, menu navigation, scroll, mobile overflow, and reduced motion loading.
+### Replacing Media Assets
+- Assets are kept in `public/assets/real/` and `public/assets/video/`.
+- Ensure images are optimized (WebP, JPG, or compressed PNG) and videos are muted and optimized for web delivery.

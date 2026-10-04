@@ -23,7 +23,7 @@ export function TeamSection({ team }: TeamSectionProps) {
 
       <figure className="team-photo">
         <img
-          src="/assets/real/techttonic-group.jpg"
+          src="/assets/real/techttonic-group.webp"
           alt="Organizing team at a previous technology event"
           loading="lazy"
           decoding="async"
